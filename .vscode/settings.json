@@ -1,0 +1,20 @@
+{
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": false,
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnType": true
+    },
+    "python.testing.pytestArgs": [
+        "elsim"
+    ],
+    "isort.args": [
+        "--profile=black"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "autopep8.args": [
+        "--max-line-length=120"
+    ],
+}
