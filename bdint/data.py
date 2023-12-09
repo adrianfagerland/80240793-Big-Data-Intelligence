@@ -4,7 +4,7 @@ from sklearn.model_selection import KFold, train_test_split
 
 
 def get_train_df(validation=None):
-    train_path = "bdint/data/train.csv"
+    train_path = "data/train.csv"
     df = pd.read_csv(train_path)
 
     train_df, validation_df = train_test_split(
@@ -14,7 +14,7 @@ def get_train_df(validation=None):
 
 
 def get_test_df():
-    test_path = "bdint/data/test.csv"
+    test_path = "data/test.csv"
     test_df = pd.read_csv(test_path)
 
     return test_df
@@ -22,7 +22,7 @@ def get_test_df():
 
 def make_kaggle_submission_file(prediction_df):
     assert len(prediction_df) == 1459
-    prediction_df.to_csv("bdint/kaggle/submission.csv", index=False)
+    prediction_df.to_csv("current_submission.csv", index=False)
 
 
 def calculate_rmse(test, prediciton):
