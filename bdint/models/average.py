@@ -1,7 +1,9 @@
 import pandas as pd
 
+from bdint.models.basemodel import BaseModel
 
-class AverageModel:
+
+class AverageModel(BaseModel):
     mean = None
 
     def learn(self, x_train_df, y_train_df):
