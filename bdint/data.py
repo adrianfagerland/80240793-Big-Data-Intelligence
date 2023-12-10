@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold, train_test_split
 
 
@@ -20,9 +21,11 @@ def get_test_df():
     return test_df
 
 
-def make_kaggle_submission_file(prediction_df):
-    assert len(prediction_df) == 1459
-    prediction_df.to_csv("current_submission.csv", index=False)
+def make_kaggle_submission_file(prediction, test_df):
+    assert len(prediction) == test_df.shape[0]
+    submission_df = test_df.copy().drop(columns=test_df.columns[1:])
+    submission_df["SalePrice"] = prediction
+    submission_df.to_csv("current_submission.csv", index=False)
 
 
 def calculate_rmse(test, prediciton):
@@ -53,7 +56,7 @@ def k_fold_validation(train_df, model, k=10):
         # Calculate RMSE
         predictions = model.predict(x_test)
 
-        rmse_value = calculate_rmse(predictions["SalePrice"], y_test["SalePrice"])
+        rmse_value = mean_squared_error(y_test["SalePrice"], predictions, squared=False)
         rmse_values.append(rmse_value)
 
     # Calculate the mean RMSE

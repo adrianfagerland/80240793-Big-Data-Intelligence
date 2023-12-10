@@ -1,10 +1,11 @@
-import pandas as pd
+import numpy as np
 
 from bdint.models.basemodel import BaseModel
 
 
-class AverageModel(BaseModel):
-    mean = None
+class AveragePredicter(BaseModel):
+    def __init__(self):
+        self.mean = None
 
     def learn(self, x_train_df, y_train_df):
         self.mean = y_train_df["SalePrice"].mean()
@@ -13,8 +14,7 @@ class AverageModel(BaseModel):
         if self.mean is None:
             raise ValueError("Model has not been trained. Call 'learn' method first.")
 
-        result_df = pd.DataFrame()
-        result_df["Id"] = x_test_df["Id"]
-        result_df["SalePrice"] = self.mean
+        prediction = np.ndarray(shape=(len(x_test_df)))
+        prediction.fill(self.mean)
 
-        return result_df
+        return prediction
