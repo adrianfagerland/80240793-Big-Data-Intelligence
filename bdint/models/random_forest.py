@@ -1,8 +1,8 @@
-import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.utils.validation import check_is_fitted
 
-from bdint.models.basemodel import BaseModel, preprocess_for_numerical_model
+from bdint.models.basemodel import BaseModel
+from bdint.models.utils import preprocess_for_numerical_model
 
 
 class RandomForest(BaseModel):
