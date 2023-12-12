@@ -16,7 +16,7 @@ print("Train Set Size:", len(train_df))
 print("Test Set Size:", len(test_df))
 
 # create Model
-model = RandomForest()
+model = RandomForest(n_estimators=100, random_state=42)
 
 # numerical
 # train_df = preprocess_for_numerical_model(train_df)
