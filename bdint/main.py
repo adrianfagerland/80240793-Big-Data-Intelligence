@@ -6,7 +6,7 @@ from bdint.data import (
     k_fold_validation,
     make_kaggle_submission_file,
 )
-from bdint.models import RandomForest
+from bdint.models import CatBoost
 from bdint.models.utils import ohe
 
 train_df = get_train_df()
@@ -16,7 +16,8 @@ print("Train Set Size:", len(train_df))
 print("Test Set Size:", len(test_df))
 
 # create Model
-model = RandomForest(n_estimators=100, random_state=42)
+# model = RandomForest(n_estimators=100, random_state=42)
+model = CatBoost()
 
 # numerical
 # train_df = preprocess_for_numerical_model(train_df)
