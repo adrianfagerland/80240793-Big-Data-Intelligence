@@ -1,17 +1,14 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import KFold, train_test_split
+from sklearn.model_selection import KFold
 
 
 def get_train_df(validation=None):
     train_path = "data/train.csv"
     df = pd.read_csv(train_path)
 
-    train_df, validation_df = train_test_split(
-        df, test_size=validation, random_state=187
-    )
-    return train_df, validation_df
+    return df
 
 
 def get_test_df():
@@ -38,7 +35,7 @@ def calculate_rmse(test, prediciton):
     return np.sqrt(np.sum(s) / len(s))
 
 
-def k_fold_validation(train_df, model, k=10):
+def k_fold_validation(train_df, model, k=5):
     target = train_df[["SalePrice"]]
     features = train_df.drop(columns=["SalePrice"])
     target.columns = ["SalePrice"]
