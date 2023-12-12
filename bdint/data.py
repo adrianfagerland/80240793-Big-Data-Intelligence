@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold, train_test_split
+from bdint.models.utils import ohe
 
 
 def get_train_df(validation=None):
@@ -50,7 +51,7 @@ def k_fold_validation(train_df, model, k=10):
         x_train, x_test = features.iloc[train_index], features.iloc[test_index]
         y_train, y_test = target.iloc[train_index], target.iloc[test_index]
 
-        # Example: Use a linear regression model
+        # Learn the given model
         model.learn(x_train, y_train)
 
         # Calculate RMSE
