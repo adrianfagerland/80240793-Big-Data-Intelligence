@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold, train_test_split
-from bdint.models.utils import ohe
 
 
 def get_train_df(validation=None):

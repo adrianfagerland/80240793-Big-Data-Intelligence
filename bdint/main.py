@@ -4,11 +4,8 @@ from bdint.data import (
     k_fold_validation,
     make_kaggle_submission_file,
 )
-from bdint.models import AveragePredicter, RandomForest
+from bdint.models import RandomForest
 from bdint.models.utils import ohe
-from bdint.models.utils import preprocess_for_numerical_model
-from bdint.features import analyse_numerical
-import pandas as pd
 
 train_df, validation_df = get_train_df()
 test_df = get_test_df()
@@ -23,17 +20,14 @@ model = RandomForest()
 train_df = train_df[["Alley", "ScreenPorch", "SalePrice"]]
 test_df = train_df[["Alley", "ScreenPorch", "SalePrice"]]
 
-#numerical
-#train_df = preprocess_for_numerical_model(train_df)
-#test_df = preprocess_for_numerical_model(test_df)
+# numerical
+# train_df = preprocess_for_numerical_model(train_df)
+# test_df = preprocess_for_numerical_model(test_df)
 
-#ohe
+# ohe
 train_df_ohe, test_df_ohe = ohe(train_df, test_df)
 
 print(train_df_ohe)
-
-
-
 
 # Check Performance of model using k validation
 rmse = k_fold_validation(train_df=train_df_ohe, model=model, k=10)
