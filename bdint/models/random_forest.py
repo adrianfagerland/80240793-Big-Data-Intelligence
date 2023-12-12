@@ -6,7 +6,7 @@ from bdint.models.basemodel import BaseModel
 
 class RandomForest(BaseModel):
     def __init__(self, *args, **kwargs):
-        self.model = RandomForestRegressor(n_estimators=100)
+        self.model = RandomForestRegressor(**kwargs)
 
     def learn(self, x_train_df, y_train_df):
         # x_train_df = preprocess_for_numerical_model(x_train_df)
