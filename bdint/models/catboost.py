@@ -4,7 +4,7 @@ from .basemodel import BaseModel
 
 class CatBoost(BaseModel):
     def __init__(self, **kwargs):
-        self.model = cb.CatBoostRegressor(**kwargs)
+        self.model = cb.CatBoostRegressor(**kwargs, random_seed=187)
 
     def learn(self, x_train_df, y_train_df):
         self.model.fit(x_train_df, y_train_df)
