@@ -1,21 +1,16 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import KFold, train_test_split
+from sklearn.model_selection import KFold
 
 
-def get_train_df(validation=None):
-    train_path = "data/train.csv"
+def get_train_df(train_path="data/train.csv"):
     df = pd.read_csv(train_path)
 
-    train_df, validation_df = train_test_split(
-        df, test_size=validation, random_state=187
-    )
-    return train_df, validation_df
+    return df
 
 
-def get_test_df():
-    test_path = "data/test.csv"
+def get_test_df(test_path="data/test.csv"):
     test_df = pd.read_csv(test_path)
 
     return test_df
@@ -38,7 +33,7 @@ def calculate_rmse(test, prediciton):
     return np.sqrt(np.sum(s) / len(s))
 
 
-def k_fold_validation(train_df, model, k=10):
+def k_fold_validation(train_df, model, k=5):
     target = train_df[["SalePrice"]]
     features = train_df.drop(columns=["SalePrice"])
     target.columns = ["SalePrice"]
@@ -50,7 +45,7 @@ def k_fold_validation(train_df, model, k=10):
         x_train, x_test = features.iloc[train_index], features.iloc[test_index]
         y_train, y_test = target.iloc[train_index], target.iloc[test_index]
 
-        # Example: Use a linear regression model
+        # Learn the given model
         model.learn(x_train, y_train)
 
         # Calculate RMSE
@@ -63,3 +58,11 @@ def k_fold_validation(train_df, model, k=10):
     mean_rmse = sum(rmse_values) / len(rmse_values)
 
     return mean_rmse
+
+def preprocessing(df):
+    #Remove uncorralated numerical features
+
+    df = df.drop(["Id", "BsmtFinSF2"], axis=1)
+
+    return df
+

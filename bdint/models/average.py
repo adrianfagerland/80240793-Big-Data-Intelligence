@@ -1,6 +1,6 @@
 import numpy as np
 
-from bdint.models.basemodel import BaseModel
+from .basemodel import BaseModel
 
 
 class AveragePredicter(BaseModel):
