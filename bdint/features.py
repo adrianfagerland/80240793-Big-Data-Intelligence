@@ -4,13 +4,14 @@ from bdint.data import (
 )
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 train_df, validation_df = get_train_df()
 test_df = get_test_df()
 
 def plot_saleprice_hist(df):
     #histogramm of prices. Motivation: "get an overview over the prices. We need this for better interpretation of the rmse we get"
-    data = train_df["SalePrice"]
+    data = df["SalePrice"]
 
     # Set up the plot
     plt.figure(figsize=(10, 6))
@@ -24,6 +25,11 @@ def plot_saleprice_hist(df):
     # Show the plot
     plt.savefig('bdint/vizualization/saleprice_historgram.png')
     plt.show()
+
+def heatmap(df):
+    corralation_matrix = df.corr()
+    f, ax = plt.subplots(figsize=(12, 9))
+    sns.heatmap(corralation_matrix, vmax=.8, square=True)
     
 def analyse_numerical(df):
     numerical_features = df.select_dtypes(include=['number'])
