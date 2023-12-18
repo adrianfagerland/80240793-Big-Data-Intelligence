@@ -4,15 +4,13 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold
 
 
-def get_train_df(validation=None):
-    train_path = "data/train.csv"
+def get_train_df(train_path="data/train.csv"):
     df = pd.read_csv(train_path)
 
     return df
 
 
-def get_test_df():
-    test_path = "data/test.csv"
+def get_test_df(test_path="data/test.csv"):
     test_df = pd.read_csv(test_path)
 
     return test_df

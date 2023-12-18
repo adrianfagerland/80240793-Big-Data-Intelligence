@@ -2,36 +2,39 @@ import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 
 
-def ohe(train_df: pd.DataFrame, test_df: pd.DataFrame):
-    train_df_copy = train_df.copy()
-    test_df_copy = test_df.copy()
+class OHE:
+    enc: OneHotEncoder
 
-    categorical_columns = train_df_copy.select_dtypes(
-        include=["object"]
-    ).columns.tolist()
+    def ohe(
+        self, df, categorical_columns_parameter=None
+    ) -> pd.DataFrame | tuple[pd.DataFrame, list[str]]:
+        df = df.copy()
 
-    enc = OneHotEncoder(handle_unknown="ignore")
-    enc.fit(train_df_copy[categorical_columns])
+        if categorical_columns_parameter is None:
+            categorical_columns = df.select_dtypes(
+                include=["category"]
+            ).columns.tolist()
 
-    train_ohe = enc.transform(train_df_copy[categorical_columns])
-    test_ohe = enc.transform(test_df_copy[categorical_columns])
+            self.enc = OneHotEncoder(handle_unknown="ignore")
+            self.enc.fit(df[categorical_columns])
+        else:
+            categorical_columns = categorical_columns_parameter
 
-    # Convert sparse matrix to Pandas DataFrame
-    train_ohe_df = pd.DataFrame(
-        train_ohe.toarray(), columns=enc.get_feature_names_out(categorical_columns)  # type: ignore
-    )
-    test_ohe_df = pd.DataFrame(
-        test_ohe.toarray(), columns=enc.get_feature_names_out(categorical_columns)  # type: ignore
-    )
+        df_ohe = self.enc.transform(df[categorical_columns])
 
-    # Combine with original numerical columns
-    train_numerical = train_df_copy.select_dtypes(exclude=["object"])
-    test_numerical = test_df_copy.select_dtypes(exclude=["object"])
+        # Convert sparse matrix to Pandas DataFrame
+        df_ohe = pd.DataFrame(
+            df_ohe.toarray(), columns=self.enc.get_feature_names_out(categorical_columns)  # type: ignore
+        )
 
-    train_final = pd.concat([train_numerical, train_ohe_df], axis=1).fillna(0)
-    test_final = pd.concat([test_numerical, test_ohe_df], axis=1).fillna(0)
+        # Combine with original numerical columns
+        df_numerical = (df.select_dtypes(exclude=["category"]).reset_index(),)
 
-    return train_final, test_final
+        df_final = pd.concat([df_numerical, df_ohe], axis=1).fillna(0)
+
+        if categorical_columns_parameter is None:
+            return df_final, categorical_columns
+        return df_final
 
 
 def preprocess_for_numerical_model(df: pd.DataFrame) -> pd.DataFrame:
