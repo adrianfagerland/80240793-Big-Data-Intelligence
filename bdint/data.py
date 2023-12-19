@@ -59,10 +59,10 @@ def k_fold_validation(train_df, model, k=5):
 
     return mean_rmse
 
+
 def preprocessing(df):
-    #Remove uncorralated numerical features
+    # Remove uncorralated numerical features
 
     df = df.drop(["Id", "BsmtFinSF2"], axis=1)
 
     return df
-
