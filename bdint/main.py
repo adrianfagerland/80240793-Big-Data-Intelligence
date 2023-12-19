@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from bdint.data import (
     get_test_df,
@@ -6,6 +7,7 @@ from bdint.data import (
     k_fold_validation,
     make_kaggle_submission_file,
 )
+from bdint.features import heatmap, categorical_boxplot
 from bdint.models import CatBoost, RandomForest
 
 train_df = get_train_df()
@@ -13,6 +15,10 @@ test_df = get_test_df()
 
 print("Train Set Size:", len(train_df))
 print("Test Set Size:", len(test_df))
+
+featureAnalysis = True
+if featureAnalysis:
+    categorical_boxplot(train_df)
 
 # create Model
 # model = RandomForest(n_estimators=100, random_state=42)
