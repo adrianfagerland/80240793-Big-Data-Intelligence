@@ -3,25 +3,26 @@ from bdint.models.utils import OHE
 
 def preprocessor(train, test):
     # NUMERICAL TO CATEGORICAL
-    trian = cast_numerical_to_categorical(df=train, to_cast=["MSSubClass", "MoSold", "YrSold"])
+    train = cast_numerical_to_categorical(df=train, to_cast=["MSSubClass", "MoSold", "YrSold"])
     test = cast_numerical_to_categorical(df=test, to_cast=["MSSubClass", "MoSold", "YrSold"])
 
     # CATEGORICAL TO ORDINAL (Label encoding)
 
     # MISSING VALUES
-    impute_na_by_none(train, ["Alley", "GarageType", "MiscFeature"])
-    impute_na_by_none(test, ["Alley", "GarageType", "MiscFeature"])
+    train = impute_na_by_none(train, ["Alley", "GarageType", "MiscFeature"])
+    test = impute_na_by_none(test, ["Alley", "GarageType", "MiscFeature"])
 
-    impute_numerical_by_median(train, ["Order", "Lot Frontage"])
-    impute_numerical_by_median(test, ["Order", "Lot Frontage"])
+    train = impute_numerical_by_median(train, ["Order", "Lot Frontage"])
+    test = impute_numerical_by_median(test, ["Order", "Lot Frontage"])
 
     # CATEGORICAL TO OHE ()
     ohe = OHE()
-    train_ohe, col = ohe.ohe(train)
-    test_ohe = ohe.ohe(test, col)
+    train, col = ohe.ohe(train)
+    test = ohe.ohe(test, col)
 
     # OUTLIER
-    filter_gr_livarea(train)
+    train = filter_gr_livarea(train)
+    return train, test
 
 
 def cast_numerical_to_categorical(df, to_cast: list):  # []'MSSubClass', 'MoSold', 'YrSold']

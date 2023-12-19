@@ -6,7 +6,8 @@ from bdint.data import (
     k_fold_validation,
     make_kaggle_submission_file,
 )
-from bdint.models import CatBoost, RandomForest
+from bdint.models import CatBoost, RandomForest, LinearRegross
+from bdint.preprocessing import preprocessor
 
 train_df = get_train_df()
 test_df = get_test_df()
@@ -14,12 +15,14 @@ test_df = get_test_df()
 print("Train Set Size:", len(train_df))
 print("Test Set Size:", len(test_df))
 
+train, test = preprocessor(train_df, test_df)
+
 # create Model
 # model = RandomForest(n_estimators=100, random_state=42)
 # set jobtype to cpu
 # model = CatBoost(early_stopping_rounds=2000, iterations=10000)
-model = CatBoost(early_stopping_rounds=2000, iterations=15000)
-
+# model = CatBoost(early_stopping_rounds=2000, iterations=15000)
+model = LinearRegross()
 # numerical
 # train_df = preprocess_for_numerical_model(train_df)
 # test_df = preprocess_for_numerical_model(test_df)
