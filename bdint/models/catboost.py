@@ -28,9 +28,7 @@ class CatBoost(BaseModel):
 
     def learn(self, x_train_df, y_train_df, validate=True):
         x_train_df, cat_features_indices = self._preprocess(x_train_df)
-        x_train, x_val, y_train, y_val = train_test_split(
-            x_train_df, y_train_df, test_size=0.1, random_state=1235436
-        )
+        x_train, x_val, y_train, y_val = train_test_split(x_train_df, y_train_df, test_size=0.1, random_state=1235436)
         # self.model.fit(
         #     x_train,
         #     y_train,
