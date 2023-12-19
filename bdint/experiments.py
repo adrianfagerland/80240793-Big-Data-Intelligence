@@ -16,7 +16,6 @@ def sale_price_vs_living_area(df):
     plt.ylabel("SalePrice")
     plt.title("SalePrice vs GrLivArea")
     plt.savefig("bdint/vizualization/SalePrice_vs_LivingArea.png")
-    plt.show()
 
 
 def RF_test_estimators(df):
