@@ -6,7 +6,7 @@ from bdint.data import (
     k_fold_validation,
     make_kaggle_submission_file,
 )
-from bdint.models import CatBoost, RandomForest, LinearRegross
+from bdint.models import CatBoost, KernelRidge, RandomForest
 from bdint.preprocessing import preprocessor
 
 train_df = get_train_df()
@@ -22,7 +22,7 @@ train, test = preprocessor(train_df, test_df)
 # set jobtype to cpu
 # model = CatBoost(early_stopping_rounds=2000, iterations=10000)
 # model = CatBoost(early_stopping_rounds=2000, iterations=15000)
-model = LinearRegross()
+model = RandomForest()
 # numerical
 # train_df = preprocess_for_numerical_model(train_df)
 # test_df = preprocess_for_numerical_model(test_df)
