@@ -18,15 +18,15 @@ print("Test Set Size:", len(test_df))
 # model = RandomForest(n_estimators=100, random_state=42)
 # set jobtype to cpu
 # model = CatBoost(early_stopping_rounds=2000, iterations=10000)
-model = CatBoost(early_stopping_rounds=2000, iterations=15000)
+model = RandomForest(n_estimators=100, random_state=42)
 
 # numerical
 # train_df = preprocess_for_numerical_model(train_df)
 # test_df = preprocess_for_numerical_model(test_df)
 
 # Check Performance of model using k validation
-# rmse = k_fold_validation(train_df=train_df, model=model)
-# print("RMSE:", rmse)
+rmse = k_fold_validation(train_df=train_df, model=model)
+print("RMSE:", rmse)
 
 
 # train model
