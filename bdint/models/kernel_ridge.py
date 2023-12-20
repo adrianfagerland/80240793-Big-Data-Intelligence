@@ -1,11 +1,11 @@
-from sklearn.kernel_ridge import KernelRidge
+from sklearn.kernel_ridge import KernelRidge as KernelRidgeRegressor
 
 from .basemodel import BaseModel
 
 
-class LinearRegross(BaseModel):
+class KernelRidge(BaseModel):
     def __init__(self, **kwargs):
-        self.model = KernelRidge(**kwargs)
+        self.model = KernelRidgeRegressor(**kwargs)
 
     def learn(self, x_train_df, y_train_df):
         self.model.fit(x_train_df, y_train_df.values.ravel())
