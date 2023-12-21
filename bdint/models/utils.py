@@ -5,11 +5,13 @@ from sklearn.preprocessing import OneHotEncoder
 class OHE:
     enc: OneHotEncoder
 
-    def ohe(self, df, categorical_columns_parameter=None) -> pd.DataFrame | tuple[pd.DataFrame, list[str]]:
+    def ohe(
+        self, df, categorical_columns_parameter=None, use_category=False
+    ) -> pd.DataFrame | tuple[pd.DataFrame, list[str]]:
         df = df.copy()
 
         if categorical_columns_parameter is None:
-            categorical_columns = df.select_dtypes(include=["object"]).columns.tolist()
+            categorical_columns = df.select_dtypes(include=["category" if use_category else "object"]).columns.tolist()
 
             self.enc = OneHotEncoder(handle_unknown="ignore")
             self.enc.fit(df[categorical_columns])
@@ -24,7 +26,7 @@ class OHE:
         )
 
         # Combine with original numerical columns
-        df_numerical = df.select_dtypes(exclude=["object"]).reset_index()
+        df_numerical = df.select_dtypes(exclude=["category" if use_category else "object"]).reset_index()
 
         df_final = pd.concat([df_numerical, df_ohe], axis=1).fillna(0)
 

@@ -10,7 +10,6 @@ class RandomForest(BaseModel):
 
     def __init__(self, *args, **kwargs):
         self.model = RandomForestRegressor(**kwargs)
-        self.categorical_columns = None
         self.ohe = OHE()
 
     def learn(self, x_train_df, y_train_df):
