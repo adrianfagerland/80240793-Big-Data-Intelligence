@@ -1,15 +1,18 @@
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
+from bdint.preprocessing import categorical_data_to_label_encoding
 
 
 class OHE:
     enc: OneHotEncoder
 
-    def ohe(self, df, categorical_columns_parameter=None) -> pd.DataFrame | tuple[pd.DataFrame, list[str]]:
+    def ohe(
+        self, df, categorical_columns_parameter=None, use_category=False
+    ) -> pd.DataFrame | tuple[pd.DataFrame, list[str]]:
         df = df.copy()
 
         if categorical_columns_parameter is None:
-            categorical_columns = df.select_dtypes(include=["category"]).columns.tolist()
+            categorical_columns = df.select_dtypes(include=["category" if use_category else "object"]).columns.tolist()
 
             self.enc = OneHotEncoder(handle_unknown="ignore")
             self.enc.fit(df[categorical_columns])
@@ -24,7 +27,7 @@ class OHE:
         )
 
         # Combine with original numerical columns
-        df_numerical = (df.select_dtypes(exclude=["category"]).reset_index(),)
+        df_numerical = df.select_dtypes(exclude=["category" if use_category else "object"]).reset_index()
 
         df_final = pd.concat([df_numerical, df_ohe], axis=1).fillna(0)
 
@@ -40,7 +43,7 @@ def preprocess_for_numerical_model(df: pd.DataFrame) -> pd.DataFrame:
     return preprocessed_df.drop(columns=remove_columns)
 
 
-def preprocess_categorical_data(df: pd.DataFrame) -> pd.DataFrame:
+def preprocess_for_categorical_model(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df["LotFrontage"] = df["LotFrontage"].fillna(-1).astype("int64")
     df["MasVnrArea"] = df["MasVnrArea"].fillna(-1).astype("int64")
@@ -61,33 +64,16 @@ def preprocess_categorical_data(df: pd.DataFrame) -> pd.DataFrame:
     df[["MSSubClass", "OverallQual", "OverallCond", "MoSold", "YrSold"]] = df[
         ["MSSubClass", "OverallQual", "OverallCond", "MoSold", "YrSold"]
     ].astype("category")
-    df.LotShape = pd.Categorical(
-        df.LotShape, categories=["IR3", "IR2", "IR1", "Reg"], ordered=True
-    )
-    df.LandContour = pd.Categorical(
-        df.LandContour, categories=["Low", "Bnk", "HLS", "Lvl"], ordered=True
-    )
-    df.Utilities = pd.Categorical(
-        df.Utilities, categories=["NoSeWa", "AllPub"], ordered=True
-    )
-    df.LandSlope = pd.Categorical(
-        df.LandSlope, categories=["Sev", "Mod", "Gtl"], ordered=True
-    )
-    df.ExterQual = pd.Categorical(
-        df.ExterQual, categories=["Fa", "TA", "Gd", "Ex"], ordered=True
-    )
-    df.ExterCond = pd.Categorical(
-        df.ExterCond, categories=["Po", "Fa", "TA", "Gd", "Ex"], ordered=True
-    )
-    df.BsmtQual = pd.Categorical(
-        df.BsmtQual, categories=["NA", "Fa", "TA", "Gd", "Ex"], ordered=True
-    )
-    df.BsmtCond = pd.Categorical(
-        df.BsmtCond, categories=["NA", "Po", "Fa", "TA", "Gd"], ordered=True
-    )
-    df.BsmtExposure = pd.Categorical(
-        df.BsmtExposure, categories=["NA", "No", "Mn", "Av", "Gd"], ordered=True
-    )
+
+    df.LotShape = pd.Categorical(df.LotShape, categories=["IR3", "IR2", "IR1", "Reg"], ordered=True)
+    df.LandContour = pd.Categorical(df.LandContour, categories=["Low", "Bnk", "HLS", "Lvl"], ordered=True)
+    df.Utilities = pd.Categorical(df.Utilities, categories=["NoSeWa", "AllPub"], ordered=True)
+    df.LandSlope = pd.Categorical(df.LandSlope, categories=["Sev", "Mod", "Gtl"], ordered=True)
+    df.ExterQual = pd.Categorical(df.ExterQual, categories=["Fa", "TA", "Gd", "Ex"], ordered=True)
+    df.ExterCond = pd.Categorical(df.ExterCond, categories=["Po", "Fa", "TA", "Gd", "Ex"], ordered=True)
+    df.BsmtQual = pd.Categorical(df.BsmtQual, categories=["NA", "Fa", "TA", "Gd", "Ex"], ordered=True)
+    df.BsmtCond = pd.Categorical(df.BsmtCond, categories=["NA", "Po", "Fa", "TA", "Gd"], ordered=True)
+    df.BsmtExposure = pd.Categorical(df.BsmtExposure, categories=["NA", "No", "Mn", "Av", "Gd"], ordered=True)
     df.BsmtFinType1 = pd.Categorical(
         df.BsmtFinType1,
         categories=["NA", "Unf", "LwQ", "Rec", "BLQ", "ALQ", "GLQ"],
@@ -98,43 +84,26 @@ def preprocess_categorical_data(df: pd.DataFrame) -> pd.DataFrame:
         categories=["NA", "Unf", "LwQ", "Rec", "BLQ", "ALQ", "GLQ"],
         ordered=True,
     )
-    df.HeatingQC = pd.Categorical(
-        df.HeatingQC, categories=["Po", "Fa", "TA", "Gd", "Ex"], ordered=True
-    )
+    df.HeatingQC = pd.Categorical(df.HeatingQC, categories=["Po", "Fa", "TA", "Gd", "Ex"], ordered=True)
     df.Electrical = pd.Categorical(
         df.Electrical,
         categories=["Mix", "FuseP", "FuseF", "FuseA", "SBrkr"],
         ordered=True,
     )
-    df.KitchenQual = pd.Categorical(
-        df.KitchenQual, categories=["Fa", "TA", "Gd", "Ex"], ordered=True
-    )
+    df.KitchenQual = pd.Categorical(df.KitchenQual, categories=["Fa", "TA", "Gd", "Ex"], ordered=True)
     df.Functional = pd.Categorical(
         df.Functional,
         categories=["Sev", "Maj2", "Maj1", "Mod", "Min2", "Min1", "Typ"],
         ordered=True,
     )
-    df.FireplaceQu = pd.Categorical(
-        df.FireplaceQu, categories=["NA", "Po", "Fa", "TA", "Gd", "Ex"], ordered=True
-    )
-    df.GarageFinish = pd.Categorical(
-        df.GarageFinish, categories=["NA", "Unf", "RFn", "Fin"], ordered=True
-    )
-    df.GarageQual = pd.Categorical(
-        df.GarageQual, categories=["NA", "Po", "Fa", "TA", "Gd", "Ex"], ordered=True
-    )
-    df.GarageCond = pd.Categorical(
-        df.GarageCond, categories=["NA", "Po", "Fa", "TA", "Gd", "Ex"], ordered=True
-    )
-    df.PavedDrive = pd.Categorical(
-        df.PavedDrive, categories=["N", "P", "Y"], ordered=True
-    )
-    df.PoolQC = pd.Categorical(
-        df.PoolQC, categories=["NA", "Fa", "Gd", "Ex"], ordered=True
-    )
-    df.Fence = pd.Categorical(
-        df.Fence, categories=["NA", "MnWw", "GdWo", "MnPrv", "GdPrv"], ordered=True
-    )
+    df.FireplaceQu = pd.Categorical(df.FireplaceQu, categories=["NA", "Po", "Fa", "TA", "Gd", "Ex"], ordered=True)
+    df.GarageFinish = pd.Categorical(df.GarageFinish, categories=["NA", "Unf", "RFn", "Fin"], ordered=True)
+    df.GarageQual = pd.Categorical(df.GarageQual, categories=["NA", "Po", "Fa", "TA", "Gd", "Ex"], ordered=True)
+    df.GarageCond = pd.Categorical(df.GarageCond, categories=["NA", "Po", "Fa", "TA", "Gd", "Ex"], ordered=True)
+    df.PavedDrive = pd.Categorical(df.PavedDrive, categories=["N", "P", "Y"], ordered=True)
+    df.PoolQC = pd.Categorical(df.PoolQC, categories=["NA", "Fa", "Gd", "Ex"], ordered=True)
+    df.Fence = pd.Categorical(df.Fence, categories=["NA", "MnWw", "GdWo", "MnPrv", "GdPrv"], ordered=True)
+
     df = df.apply(lambda col: col.astype("category") if col.dtype == "object" else col)
     df["TotalSF"] = df["TotalBsmtSF"] + df["1stFlrSF"] + df["2ndFlrSF"]
     return df

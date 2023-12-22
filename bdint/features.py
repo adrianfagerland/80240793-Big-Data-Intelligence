@@ -2,9 +2,11 @@ from bdint.data import get_test_df, get_train_df
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import numpy as np
 
-train_df, validation_df = get_train_df()
-test_df = get_test_df()
+
+# train_df = get_train_df()
+# test_df = get_test_df()
 
 
 def plot_saleprice_hist(df):
@@ -26,9 +28,52 @@ def plot_saleprice_hist(df):
 
 
 def heatmap(df):
-    corralation_matrix = df.corr()
-    f, ax = plt.subplots(figsize=(12, 9))
-    sns.heatmap(corralation_matrix, vmax=0.8, square=True)
+    df = df.copy()
+    numerical_df = df.select_dtypes(include=["number"])
+    print("Num numerical", numerical_df.shape[1])
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(numerical_df.corr(), annot=False)
+
+    plt.savefig("bdint/vizualization/heatmap.png")
+    plt.show()
+
+
+def numerical_scatter_regression(df):
+    df = df.copy()
+    numerical_df = df.select_dtypes(include=["number"])
+    for column in numerical_df.columns:
+        correlation_coefficient = df[column].corr(df["SalePrice"])
+
+        plt.figure(figsize=(10, 6))
+        sns.regplot(x=column, y="SalePrice", data=df, line_kws={"color": "#431C53"})
+        plt.title(f"SalePrice vs {column}, Corr = {round(correlation_coefficient,2)}")
+        plt.xlabel(column)
+        plt.ylabel("SalePrice")
+        plt.savefig(
+            f"bdint/vizualization/numerical_regression/scatter_plot_{int(np.abs(round(correlation_coefficient,2)*100))}_{column}.png"
+        )
+        plt.close()
+
+
+def categorical_boxplot(df):
+    df = df.copy()
+    categorical_df = df.select_dtypes(include="object")
+
+    for column in categorical_df.columns:
+        plt.figure(figsize=(10, 6))
+
+        # Box plot
+        sns.set_palette("pastel")
+        sns.boxplot(x=column, y="SalePrice", data=df)
+
+        # Set plot title and labels
+        plt.title(f"Box Plot for {column}")
+        plt.xlabel(column)
+        plt.ylabel("SalePrice")
+
+        # Save the plot
+        plt.savefig(f"bdint/vizualization/categorical_box_plot/box_plot_{column}.png")
+        plt.close()
 
 
 def analyse_numerical(df):
@@ -62,7 +107,10 @@ def analyse_numerical(df):
             else:
                 color = "greencorr"
 
-            cor_col = "\\textcolor{%s}{%s}\\color{black}" % (color, (round(correlation_sale_price, 2)))
+            cor_col = "\\textcolor{%s}{%s}\\color{black}" % (
+                color,
+                (round(correlation_sale_price, 2)),
+            )
             print(
                 f"{column} & {column_stats['min']} & {column_stats['max']} &  {column_stats['mean']:.2f} & {median_value:.2f} & {std_dev:.2f} &{missing_percentage:.2f}\% & {cor_col} \\\\"
             )

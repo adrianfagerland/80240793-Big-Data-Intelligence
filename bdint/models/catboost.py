@@ -2,7 +2,7 @@ from catboost import CatBoostRegressor, Pool, cv
 from sklearn.model_selection import train_test_split
 
 from .basemodel import BaseModel
-from .utils import preprocess_categorical_data
+from bdint.preprocessing import categorical_data_to_label_encoding
 
 
 class CatBoost(BaseModel):
@@ -10,7 +10,7 @@ class CatBoost(BaseModel):
         self.model = CatBoostRegressor(verbose=250, **kwargs)
 
     def _preprocess(self, df):
-        df = preprocess_categorical_data(df)
+        df = categorical_data_to_label_encoding(df)
         cat_features = df.select_dtypes(include=["category"]).columns
         cat_features_indices = [df.columns.get_loc(c) for c in cat_features]
         return df, cat_features_indices
