@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 
 class BaseModel(ABC):
     @abstractmethod
@@ -11,5 +13,5 @@ class BaseModel(ABC):
         pass
 
     @abstractmethod
-    def predict(self, x_test_df):
+    def predict(self, x_test_df) -> np.ndarray:
         pass
