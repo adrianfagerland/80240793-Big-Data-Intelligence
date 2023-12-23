@@ -8,9 +8,18 @@
             "name": "Python: Main",
             "type": "python",
             "request": "launch",
-            "program": "bdint/main.py",
+            "program": "main.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "cwd": "${workspaceFolder}/bdint",
+            "justMyCode": false
+        },
+        {
+            "name": "Current Python File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}/bdint",
+            "console": "integratedTerminal"
         }
     ]
 }

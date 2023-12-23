@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
+import torch
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold
-import torch
 
 
 def get_train_df(train_path="data/train.csv"):
@@ -53,7 +53,7 @@ def k_fold_validation(model, k=10):
         predictions = model.predict(x_test)
         if isinstance(predictions, torch.Tensor):
             predictions = predictions.detach().numpy()
-        rmse_value = mean_squared_error(y_test["SalePrice"], predictions, squared=False)
+        rmse_value = mean_squared_error(np.expm1(y_test["SalePrice"]), np.expm1(predictions), squared=False)
         rmse_values.append(rmse_value)
 
     # Calculate the mean RMSE

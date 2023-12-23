@@ -26,7 +26,7 @@ print(f"k-fold Validation: {score}")
 
 # predict test set
 model.learn()
-prediction = model.predict()
+prediction = np.expm1(model.predict())
 plt.hist(prediction, bins=20, color="blue", edgecolor="black")
 plt.show()
 # create kaggle submission file

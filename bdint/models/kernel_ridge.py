@@ -1,21 +1,18 @@
+import pandas as pd
 from sklearn.kernel_ridge import KernelRidge as KernelRidgeRegressor
 
-from .basemodel import BaseModel
 from bdint.models.utils import OHE
 from bdint.preprocessing import (
-    impute_numerical_by_median,
     cast_numerical_to_categorical,
-    impute_na_by_none,
-    impute_numerical_by_zero,
-    impute_na_by_mode,
     categorical_data_to_label_encoding,
+    impute_na_by_mode,
+    impute_na_by_none,
+    impute_numerical_by_median,
+    impute_numerical_by_zero,
     log_transform_if_skewed,
 )
-from bdint.features import numerical_scatter_regression, categorical_boxplot
-from bdint.data import k_fold_validation
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+
+from .basemodel import BaseModel
 
 
 class KernelRidgeRegression(BaseModel):
@@ -25,9 +22,11 @@ class KernelRidgeRegression(BaseModel):
         self,
         train,
         test,
+        skewness_threshold=0.7,
         **kwargs,
     ):
         self.model = KernelRidgeRegressor(**kwargs)
+        self.skewness_threshold = skewness_threshold
         self.ohe = OHE()
         self.train, self.test = self._preprocess(train_df=train, test_df=test)
 
@@ -128,13 +127,10 @@ class KernelRidgeRegression(BaseModel):
         print("MISSING COLUMNS:", all_df.columns[all_df.isna().any()].values)
 
         # transform skewness of numericals
-        all_df["SalePrice"] = np.log1p(all_df["SalePrice"])
+        all_df = log_transform_if_skewed(all_df, self.skewness_threshold)
 
-        all_df = log_transform_if_skewed(all_df, 0.7)
-
-        if train_df is not None and False:
-            categorical_boxplot(pd.concat([df, train_df], axis=1))
-            numerical_scatter_regression(pd.concat([df, train_df], axis=1))
+        # categorical_boxplot(pd.concat([df, train_df], axis=1))
+        # numerical_scatter_regression(pd.concat([df, train_df], axis=1))
 
         # OHE
         categorical_columns = all_df.select_dtypes(include=["object"]).columns.tolist()

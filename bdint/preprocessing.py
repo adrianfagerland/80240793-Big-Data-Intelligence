@@ -1,5 +1,5 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 """
 def preprocessor(train, test):
@@ -102,12 +102,28 @@ def categorical_data_to_label_encoding(df):
 
 def log_transform_if_skewed(df, skewness_threshold):
     df_num = df.select_dtypes(include=["int64", "float64"])
+    df_non_num = df.select_dtypes(exclude=["int64", "float64"])
 
-    df_skewed = np.log1p(df_num[df_num.skew()[df_num.skew() > skewness_threshold].index])
+    # always log transform SalePrice
+    df_num["SalePrice"] = np.log1p(df_num["SalePrice"])
 
-    df_non_skew = df_num[df_num.skew()[df_num.skew() <= skewness_threshold].index]
+    # remove SalePrice from df_num before calculating skewness
+    df_num_without_saleprice = df_num.drop(columns=["SalePrice"])
 
-    return pd.concat([df_skewed, df_non_skew], axis=1)
+    df_skewed = np.log1p(
+        df_num_without_saleprice[
+            df_num_without_saleprice.skew()[df_num_without_saleprice.skew() > skewness_threshold].index
+        ]
+    )
+
+    df_non_skew = df_num_without_saleprice[
+        df_num_without_saleprice.skew()[df_num_without_saleprice.skew() <= skewness_threshold].index
+    ]
+
+    # add SalePrice back to the dataframe
+    df_final = pd.concat([df_skewed, df_non_skew, df_num["SalePrice"], df_non_num], axis=1)
+
+    return df_final
 
 
 """def log_transform_if_skewed(series, skewness_threshold):
