@@ -62,7 +62,10 @@ def analyse_numerical(df):
             else:
                 color = "greencorr"
 
-            cor_col = "\\textcolor{%s}{%s}\\color{black}" % (color, (round(correlation_sale_price, 2)))
+            cor_col = "\\textcolor{%s}{%s}\\color{black}" % (
+                color,
+                (round(correlation_sale_price, 2)),
+            )
             print(
                 f"{column} & {column_stats['min']} & {column_stats['max']} &  {column_stats['mean']:.2f} & {median_value:.2f} & {std_dev:.2f} &{missing_percentage:.2f}\% & {cor_col} \\\\"
             )
