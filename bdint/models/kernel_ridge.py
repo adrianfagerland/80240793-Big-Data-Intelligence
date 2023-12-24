@@ -1,5 +1,7 @@
 import pandas as pd
 from sklearn.kernel_ridge import KernelRidge as KernelRidgeRegressor
+from sklearn.linear_model import Lasso
+from sklearn.linear_model import Ridge as RidgeRegressor
 from sklearn.svm import SVR
 from bdint.models.utils import OHE
 from bdint.preprocessing import (
@@ -13,8 +15,8 @@ from bdint.preprocessing import (
 )
 
 from .basemodel import BaseModel
-from sklearn.linear_model import Lasso
 import numpy as np
+
 
 
 class LinearRegression(BaseModel):
@@ -32,7 +34,12 @@ class LinearRegression(BaseModel):
             self.model = KernelRidgeRegressor(**kwargs)
         elif regression_type == "Lasso":
             self.model = Lasso(**kwargs)
+        elif regression_type == "Ridge":
+            self.model = RidgeRegressor(**kwargs)
+        elif regression_type == "SVR": 
+            self.model = SVR(**kwargs)
 
+        self.name = regression_type
         self.skewness_threshold = skewness_threshold
         self.ohe = OHE()
         self.train, self.test = self._preprocess(train_df=train, test_df=test)
@@ -132,7 +139,7 @@ class LinearRegression(BaseModel):
                 "SalePrice",
             ]
         ]"""
-        print("MISSING COLUMNS:", all_df.columns[all_df.isna().any()].values)
+        #check: print("MISSING COLUMNS:", all_df.columns[all_df.isna().any()].values)
 
         # transform skewness of numericals
         all_df = log_transform_if_skewed(all_df, self.skewness_threshold)
