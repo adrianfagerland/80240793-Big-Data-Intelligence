@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.kernel_ridge import KernelRidge as KernelRidgeRegressor
-
+from sklearn.svm import SVR
 from bdint.models.utils import OHE
 from bdint.preprocessing import (
     cast_numerical_to_categorical,
@@ -13,24 +13,32 @@ from bdint.preprocessing import (
 )
 
 from .basemodel import BaseModel
+from sklearn.linear_model import Lasso
+import numpy as np
 
 
-class KernelRidgeRegression(BaseModel):
+class LinearRegression(BaseModel):
     categorical_columns = None
 
     def __init__(
         self,
         train,
         test,
+        regression_type="KernelRidge",
         skewness_threshold=0.7,
         **kwargs,
     ):
-        self.model = KernelRidgeRegressor(**kwargs)
+        if regression_type == "KernelRidge":
+            self.model = KernelRidgeRegressor(**kwargs)
+        elif regression_type == "Lasso":
+            self.model = Lasso(**kwargs)
+
         self.skewness_threshold = skewness_threshold
         self.ohe = OHE()
         self.train, self.test = self._preprocess(train_df=train, test_df=test)
 
     def _preprocess(self, train_df, test_df):
+        split_pos = len(train_df) - 1
         all_df = pd.concat([train_df, test_df], axis=0, sort=True)
 
         # drop uncoraleted Columns
@@ -136,7 +144,7 @@ class KernelRidgeRegression(BaseModel):
         categorical_columns = all_df.select_dtypes(include=["object"]).columns.tolist()
         all_df = pd.get_dummies(all_df, columns=categorical_columns, prefix=categorical_columns)
 
-        train = all_df.iloc[0:1459, :]
+        train = all_df.iloc[0:split_pos, :]
         test = all_df.iloc[1460:, :]
         test = test.drop(["SalePrice"], axis=1)
 
@@ -153,4 +161,4 @@ class KernelRidgeRegression(BaseModel):
     def predict(self, test_x=None):
         if test_x is None:
             test_x = self.test
-        return self.model.predict(test_x)
+        return np.expm1(self.model.predict(test_x))

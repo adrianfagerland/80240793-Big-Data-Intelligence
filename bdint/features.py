@@ -3,7 +3,7 @@ import numpy as np
 import seaborn as sns
 
 from bdint.data import get_test_df, get_train_df, k_fold_validation
-from bdint.models.kernel_ridge import KernelRidgeRegression
+
 
 # train_df = get_train_df()
 # test_df = get_test_df()

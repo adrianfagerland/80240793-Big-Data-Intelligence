@@ -8,7 +8,7 @@ from bdint.data import (
     make_kaggle_submission_file,
 )
 from bdint.features import heatmap, categorical_boxplot
-from bdint.models import CatBoost, RandomForest, KernelRidgeRegression
+from bdint.models import CatBoost, RandomForest, LinearRegression
 import matplotlib.pyplot as plt
 
 train_df = get_train_df()
@@ -18,15 +18,16 @@ print("Train Set Size:", len(train_df))
 print("Test Set Size:", len(test_df))
 
 
-model = KernelRidgeRegression(train=train_df, test=test_df)
+model = CatBoost()
 
 # train model
-score = k_fold_validation(model=model, k=5)
-print(f"k-fold Validation: {score}")
-
+model.learn(
+    x_train_df=train_df.drop(columns=["SalePrice"], inplace=False),
+    y_train_df=pd.DataFrame(train_df["SalePrice"]),
+)
 # predict test set
-model.learn()
-prediction = np.expm1(model.predict())
+prediction = model.predict(x_test_df=test_df)
+
 plt.hist(prediction, bins=20, color="blue", edgecolor="black")
 plt.show()
 # create kaggle submission file
