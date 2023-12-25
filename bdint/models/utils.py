@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
+
 from bdint.preprocessing import categorical_data_to_label_encoding
 
 
@@ -61,10 +62,7 @@ def preprocess_for_categorical_model(df: pd.DataFrame) -> pd.DataFrame:
     df.GarageCars = df.GarageCars.fillna(0)  # assuming that this is 0 if it is na
     df.GarageArea = df.GarageArea.fillna(0)  # assuming that this is 0 if it is na
     df = df.fillna("NA")
-    df[["MSSubClass", "OverallQual", "OverallCond", "MoSold", "YrSold"]] = df[
-        ["MSSubClass", "OverallQual", "OverallCond", "MoSold", "YrSold"]
-    ].astype("category")
-
+    df[["MSSubClass", "MoSold", "YrSold"]] = df[["MSSubClass", "MoSold", "YrSold"]].astype("category")
     df.LotShape = pd.Categorical(df.LotShape, categories=["IR3", "IR2", "IR1", "Reg"], ordered=True)
     df.LandContour = pd.Categorical(df.LandContour, categories=["Low", "Bnk", "HLS", "Lvl"], ordered=True)
     df.Utilities = pd.Categorical(df.Utilities, categories=["NoSeWa", "AllPub"], ordered=True)
@@ -103,7 +101,6 @@ def preprocess_for_categorical_model(df: pd.DataFrame) -> pd.DataFrame:
     df.PavedDrive = pd.Categorical(df.PavedDrive, categories=["N", "P", "Y"], ordered=True)
     df.PoolQC = pd.Categorical(df.PoolQC, categories=["NA", "Fa", "Gd", "Ex"], ordered=True)
     df.Fence = pd.Categorical(df.Fence, categories=["NA", "MnWw", "GdWo", "MnPrv", "GdPrv"], ordered=True)
-
     df = df.apply(lambda col: col.astype("category") if col.dtype == "object" else col)
     df["TotalSF"] = df["TotalBsmtSF"] + df["1stFlrSF"] + df["2ndFlrSF"]
     return df
