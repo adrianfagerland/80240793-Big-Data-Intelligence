@@ -1,10 +1,12 @@
-from bdint.data import get_test_df, get_train_df
 import matplotlib.pyplot as plt
-import pandas as pd
+import numpy as np
 import seaborn as sns
 
-train_df, validation_df = get_train_df()
-test_df = get_test_df()
+from bdint.data import get_test_df, get_train_df, k_fold_validation
+from bdint.models.kernel_ridge import KernelRidgeRegression
+
+# train_df = get_train_df()
+# test_df = get_test_df()
 
 
 def plot_saleprice_hist(df):
@@ -21,14 +23,57 @@ def plot_saleprice_hist(df):
     plt.ylabel("Frequency")
 
     # Show the plot
-    plt.savefig("bdint/vizualization/saleprice_historgram.png")
+    plt.savefig("vizualization/saleprice_historgram.png")
     plt.show()
 
 
 def heatmap(df):
-    corralation_matrix = df.corr()
-    f, ax = plt.subplots(figsize=(12, 9))
-    sns.heatmap(corralation_matrix, vmax=0.8, square=True)
+    df = df.copy()
+    numerical_df = df.select_dtypes(include=["number"])
+    print("Num numerical", numerical_df.shape[1])
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(numerical_df.corr(), annot=False)
+
+    plt.savefig("vizualization/heatmap.png")
+    plt.show()
+
+
+def numerical_scatter_regression(df):
+    df = df.copy()
+    numerical_df = df.select_dtypes(include=["number"])
+    for column in numerical_df.columns:
+        correlation_coefficient = df[column].corr(df["SalePrice"])
+
+        plt.figure(figsize=(10, 6))
+        sns.regplot(x=column, y="SalePrice", data=df, line_kws={"color": "#431C53"})
+        plt.title(f"SalePrice vs {column}, Corr = {round(correlation_coefficient,2)}")
+        plt.xlabel(column)
+        plt.ylabel("SalePrice")
+        plt.savefig(
+            f"vizualization/numerical_regression/scatter_plot_{int(np.abs(round(correlation_coefficient,2)*100))}_{column}.png"
+        )
+        plt.close()
+
+
+def categorical_boxplot(df):
+    df = df.copy()
+    categorical_df = df.select_dtypes(include="object")
+
+    for column in categorical_df.columns:
+        plt.figure(figsize=(10, 6))
+
+        # Box plot
+        sns.set_palette("pastel")
+        sns.boxplot(x=column, y="SalePrice", data=df)
+
+        # Set plot title and labels
+        plt.title(f"Box Plot for {column}")
+        plt.xlabel(column)
+        plt.ylabel("SalePrice")
+
+        # Save the plot
+        plt.savefig(f"vizualization/categorical_box_plot/box_plot_{column}.png")
+        plt.close()
 
 
 def analyse_numerical(df):
@@ -96,6 +141,40 @@ def analyse_categorical(df):
             print(
                 f"{column} & {num_categories} & {top_categories.index[0]} & {top_categories.iloc[0]:.2f}\% & {top_categories.index[1]} & {top_categories.iloc[1]:.2f}\% & {missing_percentage:.2f}\% \\\\"
             )
+
+
+def plot_skewness_treshold(train_df, test_df, path="vizualization/accuracy_kernel_ridge_skewness_threshold.png"):
+    x_0_1 = np.linspace(-0.5, 1.5, 100)
+
+    xs = x_0_1
+    scores = []
+    for x in xs:
+        model = KernelRidgeRegression(train=train_df, test=test_df, skewness_threshold=x)
+        score = k_fold_validation(model=model, k=5)
+        print(f"Skewness treshold: {x}, score: {score}")
+        scores.append(score)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(xs, scores, color="#431C53")
+    sns.set_palette("pastel")
+    plt.ylabel("Accuracy")
+    plt.xlabel("Skewness treshold")
+    plt.savefig(path)
+    plt.close()
+
+
+# if name is main
+if __name__ == "__main__":
+    train_df = get_train_df()
+    test_df = get_test_df()
+    plot_skewness_treshold(train_df, test_df)
+
+    # plot_saleprice_hist(train_df)
+    # heatmap(train_df)
+    # numerical_scatter_regression(train_df)
+    # categorical_boxplot(train_df)
+    # analyse_numerical(train_df)
+    # analyse_categorical(train_df)
 
 
 # plot_saleprice_hist(train_df)

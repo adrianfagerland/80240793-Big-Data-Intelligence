@@ -1,16 +1,18 @@
 from catboost import CatBoostRegressor, Pool, cv
 from sklearn.model_selection import train_test_split
 
+from bdint.models.utils import preprocess_for_categorical_model
+
 from .basemodel import BaseModel
-from .utils import preprocess_categorical_data
 
 
 class CatBoost(BaseModel):
     def __init__(self, **kwargs):
         self.model = CatBoostRegressor(verbose=250, **kwargs)
+        self.kwargs = kwargs
 
     def _preprocess(self, df):
-        df = preprocess_categorical_data(df)
+        df = preprocess_for_categorical_model(df)
         cat_features = df.select_dtypes(include=["category"]).columns
         cat_features_indices = [df.columns.get_loc(c) for c in cat_features]
         return df, cat_features_indices
@@ -27,6 +29,8 @@ class CatBoost(BaseModel):
         return scores
 
     def learn(self, x_train_df, y_train_df, validate=True):
+        # reset model
+        self.model = CatBoostRegressor(verbose=250, **self.kwargs)
         x_train_df, cat_features_indices = self._preprocess(x_train_df)
         x_train, x_val, y_train, y_val = train_test_split(x_train_df, y_train_df, test_size=0.1, random_state=1235436)
         # self.model.fit(

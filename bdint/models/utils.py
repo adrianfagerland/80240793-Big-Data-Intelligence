@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 
+from bdint.preprocessing import categorical_data_to_label_encoding
+
 
 class OHE:
     enc: OneHotEncoder
@@ -42,7 +44,7 @@ def preprocess_for_numerical_model(df: pd.DataFrame) -> pd.DataFrame:
     return preprocessed_df.drop(columns=remove_columns)
 
 
-def preprocess_categorical_data(df: pd.DataFrame) -> pd.DataFrame:
+def preprocess_for_categorical_model(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df["LotFrontage"] = df["LotFrontage"].fillna(-1).astype("int64")
     df["MasVnrArea"] = df["MasVnrArea"].fillna(-1).astype("int64")

@@ -22,15 +22,6 @@ print("Test Set Size:", len(test_df))
 # model = RandomForest(n_estimators=100, random_state=42)
 model = NN(hidden_size1=1028, hidden_size2=512, hidden_size3=256)
 
-# numerical
-# train_df = preprocess_for_numerical_model(train_df)
-# test_df = preprocess_for_numerical_model(test_df)
-
-# Check Performance of model using k validation
-# rmse = k_fold_validation(train_df=train_df, model=model)
-# print("RMSE:", rmse)
-
-
 # train model
 model.learn(
     x_train_df=train_df.drop(columns=["SalePrice"], inplace=False),

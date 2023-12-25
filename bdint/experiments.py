@@ -6,9 +6,21 @@ import matplotlib.pyplot as plt
 from bdint.models.utils import ohe
 
 
+def sale_price_vs_living_area(df):
+    sp = df["SalePrice"]
+    la = df["GrLivArea"]
+
+    plt.scatter(la, sp, color="#431C53", s=4)
+    plt.axvline(x=4000, color="red", linestyle="--", label="x=100")
+    plt.xlabel("GrLivArea")
+    plt.ylabel("SalePrice")
+    plt.title("SalePrice vs GrLivArea")
+    plt.savefig("vizualization/SalePrice_vs_LivingArea.png")
+
+
 def RF_test_estimators(df):
     # write header in anal file. MAybe usefull later when plotting
-    with open("bdint/anal/random_tree/estimators.txt", "w") as file:
+    with open("anal/random_tree/estimators.txt", "w") as file:
         file.write("Estimators\tRMSE\tTime\n")
 
     max_it = 100
@@ -24,7 +36,7 @@ def RF_test_estimators(df):
 
         print(f"{rmse}\t{time_to_calc}s")
 
-        with open("bdint/anal/random_tree/estimators.txt", "a") as file:
+        with open("anal/random_tree/estimators.txt", "a") as file:
             file.write(f"{estimator}\t{rmse}\t{time_to_calc}\n")
 
 
@@ -35,7 +47,7 @@ def CB_one_feature_test(df):
     model = CatBoost()
     train_df_ohe, test_df_ohe = ohe(df, df)
     baseline_rmse = k_fold_validation(train_df=train_df_ohe, model=model)
-    with open("bdint/anal/cat_boost/one_feature.txt", "w") as file:
+    with open("anal/cat_boost/one_feature.txt", "w") as file:
         file.write(f"ALL\t{baseline_rmse}\n")
 
     l = len(numerical_features)
@@ -53,7 +65,7 @@ def CB_one_feature_test(df):
         correlation = df[num].corr(df["SalePrice"])
         dif = rmse - baseline_rmse
 
-        with open("bdint/anal/cat_boost/one_feature.txt", "a") as file:
+        with open("anal/cat_boost/one_feature.txt", "a") as file:
             file.write(f"{num}\t{rmse}\t{correlation}\t{dif}\n")
 
 
@@ -97,5 +109,5 @@ def plot_one_with_time(path, title):
 
     plt.title(title)
 
-    plt.savefig(f'bdint/vizualization/{title.replace(" ", "_")}.png')
+    plt.savefig(f'vizualization/{title.replace(" ", "_")}.png')
     plt.show()
