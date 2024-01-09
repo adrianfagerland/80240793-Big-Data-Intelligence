@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from bdint.models.utils import preprocess_for_categorical_model
 
 from .basemodel import BaseModel
+from .utils import preprocess_for_categorical_model
 
 
 class CatBoost(BaseModel):

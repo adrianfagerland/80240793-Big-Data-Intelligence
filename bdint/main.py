@@ -1,13 +1,9 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 import torch
 
-from bdint.data import (
-    get_test_df,
-    get_train_df,
-    k_fold_validation,
-    make_kaggle_submission_file,
-)
-from bdint.models import NN, CatBoost, RandomForest
+from bdint.data import get_test_df, get_train_df, make_kaggle_submission_file
+from bdint.models import NN, CatBoost
 
 train_df = get_train_df()
 test_df = get_test_df()
@@ -15,12 +11,8 @@ test_df = get_test_df()
 print("Train Set Size:", len(train_df))
 print("Test Set Size:", len(test_df))
 
-# create Model
-# model = RandomForest(n_estimators=100, random_state=42)
-# set jobtype to cpu
-# model = CatBoost(early_stopping_rounds=2000, iterations=10000)
-# model = RandomForest(n_estimators=100, random_state=42)
-model = NN(hidden_size1=1028, hidden_size2=512, hidden_size3=256)
+
+model = CatBoost()
 
 # train model
 model.learn(
@@ -29,6 +21,9 @@ model.learn(
 )
 # predict test set
 prediction = model.predict(x_test_df=test_df)
+
+plt.hist(prediction, bins=20, color="blue", edgecolor="black")
+plt.show()
 if isinstance(prediction, torch.Tensor):
     prediction = prediction.detach().numpy()
 # create kaggle submission file
