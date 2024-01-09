@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from sklearn.kernel_ridge import KernelRidge as KernelRidgeRegressor
 from sklearn.linear_model import Lasso
@@ -43,6 +44,8 @@ class LinearRegression(BaseModel):
         self.skewness_threshold = skewness_threshold
         self.ohe = OHE()
         self.train, self.test = self._preprocess(train_df=train, test_df=test)
+        self.skewness_threshold = skewness_threshold
+        self.kwargs = kwargs
 
     def _preprocess(self, train_df, test_df):
         split_pos = len(train_df) - 1
@@ -139,7 +142,6 @@ class LinearRegression(BaseModel):
                 "SalePrice",
             ]
         ]"""
-        #check: print("MISSING COLUMNS:", all_df.columns[all_df.isna().any()].values)
 
         # transform skewness of numericals
         all_df = log_transform_if_skewed(all_df, self.skewness_threshold)
@@ -157,13 +159,14 @@ class LinearRegression(BaseModel):
 
         return train, test
 
-    def learn(self, train_x=None, train_y=None):
-        if train_y is None:
-            train_y = self.train["SalePrice"]
-        if train_x is None:
-            train_x = self.train.drop(columns=["SalePrice"])
+    def learn(self, x_train_df=None, y_train_df=None):
+        self.model = KernelRidgeRegressor(**self.kwargs)
+        if x_train_df is None:
+            x_train_df = self.train.drop(columns=["SalePrice"])
+        if y_train_df is None:
+            y_train_df = self.train["SalePrice"]
 
-        self.model.fit(train_x, train_y)
+        self.model.fit(x_train_df, y_train_df)
 
     def predict(self, test_x=None):
         if test_x is None:

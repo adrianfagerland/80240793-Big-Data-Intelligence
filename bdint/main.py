@@ -1,15 +1,9 @@
-import pandas as pd
-import numpy as np
-
-from bdint.data import (
-    get_test_df,
-    get_train_df,
-    k_fold_validation,
-    make_kaggle_submission_file,
-)
-from bdint.features import heatmap, categorical_boxplot
-from bdint.models import CatBoost, RandomForest, LinearRegression
 import matplotlib.pyplot as plt
+import pandas as pd
+import torch
+
+from bdint.data import get_test_df, get_train_df, make_kaggle_submission_file
+from bdint.models import NN, CatBoost
 
 train_df = get_train_df()
 test_df = get_test_df()
@@ -30,5 +24,7 @@ prediction = model.predict(x_test_df=test_df)
 
 plt.hist(prediction, bins=20, color="blue", edgecolor="black")
 plt.show()
+if isinstance(prediction, torch.Tensor):
+    prediction = prediction.detach().numpy()
 # create kaggle submission file
 make_kaggle_submission_file(prediction, test_df)

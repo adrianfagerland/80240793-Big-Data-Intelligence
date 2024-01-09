@@ -4,12 +4,9 @@ import torch.nn as nn
 
 from bdint.models.basemodel import BaseModel
 from bdint.models.utils import OHE, preprocess_for_categorical_model
-from bdint.data import k_fold_validation
 
 
 class NN(nn.Module, BaseModel):
-    categorical_columns = None
-
     def _preprocess(self, df, predicting=False) -> torch.Tensor:
         df = preprocess_for_categorical_model(df)
         ohe = self.ohe.ohe(df, use_category=True, categorical_columns_parameter=self.categorical_columns)
@@ -25,7 +22,9 @@ class NN(nn.Module, BaseModel):
             self.hidden1 = nn.Linear(matrix.shape[1], self.hidden1.out_features)
         return torch.from_numpy(matrix)
 
-    def __init__(self, hidden_size1, hidden_size2, hidden_size3):
+    def __init__(
+        self, hidden_size1, hidden_size2, hidden_size3, epochs=500, lr=0.5, weight_decay=0.1, categorical_columns=None
+    ):
         super().__init__()
         self.hidden1 = nn.Linear(1, hidden_size1)
         self.bn1 = nn.BatchNorm1d(hidden_size1)
@@ -36,6 +35,10 @@ class NN(nn.Module, BaseModel):
         self.output = nn.Linear(hidden_size3, 1)
         self.relu = nn.ReLU()
         self.ohe = OHE()
+        self.epochs = epochs
+        self.lr = lr
+        self.weight_decay = weight_decay
+        self.categorical_columns = categorical_columns
 
     def forward(self, x):
         out = self.hidden1(x)
@@ -50,13 +53,21 @@ class NN(nn.Module, BaseModel):
         out = self.output(out)
         return out
 
-    def learn(self, x_train_df, y_train_df, epochs=1000, learning_rate=0.4, weight_decay=0.1):
+    def learn(self, x_train_df, y_train_df):
+        self.__init__(
+            self.hidden1.out_features,
+            self.hidden2.out_features,
+            self.hidden3.out_features,
+            self.epochs,
+            self.lr,
+            self.weight_decay,
+        )
         x_train_tensor = self._preprocess(x_train_df)
         y_train_tensor = torch.from_numpy(y_train_df.values.astype(np.float32))
         criterion = nn.MSELoss()
-        optimizer = torch.optim.Adam(self.parameters(), lr=learning_rate, weight_decay=weight_decay)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
 
-        for epoch in range(epochs):
+        for epoch in range(self.epochs):
             y_pred = self(x_train_tensor)
             loss = criterion(y_pred, y_train_tensor)
             print(f"Epoch: {epoch}, Loss: {np.sqrt(loss.item())}")
@@ -67,4 +78,4 @@ class NN(nn.Module, BaseModel):
 
     def predict(self, x_test_df):
         x_test_tensor = self._preprocess(x_test_df, predicting=True)
-        return self.forward(x_test_tensor)
+        return self.forward(x_test_tensor).detach().numpy()
